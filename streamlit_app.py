@@ -105,7 +105,7 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 # 5. Predict
 def predict(model, features):
     model.eval()
-    device = next(model.parameters()).device  # Get model device
+    device = next(model.parameters()).device
     with torch.no_grad():
         inputs = torch.from_numpy(features).float().to(device)
         preds = model(inputs).cpu().numpy()
