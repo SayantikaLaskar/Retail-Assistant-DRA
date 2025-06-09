@@ -77,19 +77,30 @@ class DemandModel(nn.Module):
 def train_model(model, dataloader, epochs=5, lr=0.001):
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+
     for epoch in range(epochs):
         model.train()
         total_loss = 0
-        for x, y in dataloader:
+        for i, (x, y) in enumerate(dataloader):
             optimizer.zero_grad()
             preds = model(x)
             loss = criterion(preds, y)
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-        # Show loss only once per epoch, not for every batch
-        st.write(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(dataloader):.4f}")
+
+            # Update progress bar inside epoch for batch progress (optional)
+            progress = (epoch + i / len(dataloader)) / epochs
+            progress_bar.progress(min(progress, 1.0))
+
+        status_text.text(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss / len(dataloader):.4f}")
+
+    progress_bar.empty()
+    status_text.empty()
     return model
+
 
 # 5. Predict
 def predict(model, features):
