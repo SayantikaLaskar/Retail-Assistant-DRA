@@ -1,8 +1,5 @@
-# ✅ core dependencies
+pandas
+numpy
+scikit-learn
 streamlit==1.45.1
 torch==2.1.2
-tensorflow==2.15.0
-
-# ✅ optional tools
-rich==14.0.0
-pygments==2.19.1
