@@ -1,6 +1,6 @@
 # ✅ core dependencies
 streamlit==1.45.1
-torch==2.2.0
+torch==2.1.2
 tensorflow==2.15.0
 
 # ✅ optional tools
