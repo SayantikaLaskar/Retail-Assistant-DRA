@@ -98,7 +98,8 @@ def predict(model, features):
 # 6. Simulated real-time inputs
 def simulate_real_time_features(date, store_enc):
     np.random.seed(int(date.strftime('%Y%m%d')) + store_enc)
-    temp = 60 + 20 * np.sin(date.dayofyear * 2 * np.pi / 365) + np.random.randn()
+    day_of_year = date.timetuple().tm_yday
+    temp = 60 + 20 * np.sin(day_of_year * 2 * np.pi / 365) + np.random.randn()
     fuel_price = 2.5 + 0.1 * np.random.randn()
     cpi = 200 + 5 * np.random.randn()
     unemployment = 5 + np.random.randn()
