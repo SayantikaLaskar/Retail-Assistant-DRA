@@ -53,9 +53,9 @@ class WalmartDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
-    features = torch.tensor(self.features[idx], dtype=torch.float32)
-    target = torch.tensor(self.targets[idx], dtype=torch.float32)
-    return features, target
+        features = torch.tensor(self.features[idx], dtype=torch.float32)
+        target = torch.tensor(self.targets[idx], dtype=torch.float32)
+        return features, target
 
 
 # 3. Model
