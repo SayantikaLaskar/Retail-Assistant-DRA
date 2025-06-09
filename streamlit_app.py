@@ -101,23 +101,17 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
     status_text.empty()
     return model
 
-st.write("✅ Features type:", type(features))
-st.write("✅ Features shape:", np.shape(features))
-st.write("✅ Features dtype:", features.dtype if isinstance(features, np.ndarray) else "Not numpy")
 
 # 5. Predict
 def predict(model, features):
     model.eval()
     device = next(model.parameters()).device
     with torch.no_grad():
-        if isinstance(features, np.ndarray):
-            features = np.ascontiguousarray(features, dtype=np.float32)
-        else:
-            features = np.array(features, dtype=np.float32, ndmin=2)
-
-        inputs = torch.from_numpy(features).to(device)
+        features = np.ascontiguousarray(features, dtype=np.float32)
+        inputs = torch.tensor(features).to(device)
         preds = model(inputs).cpu().numpy()
     return preds
+
 
 # 6. Simulated real-time inputs
 def simulate_real_time_features(date, store_enc):
