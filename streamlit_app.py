@@ -137,13 +137,21 @@ features = [[
 ]]
 
 if st.button("Train Model (takes ~30 seconds)"):
-    train_sample = data.sample(frac=0.05, random_state=42).dropna()
+    train_sample = data.sample(frac=0.05, random_state=42)
 
-    # Filter numeric rows only
-    numeric_columns = ['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
-                       'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek', 'Weekly_Sales']
-    train_sample = train_sample[numeric_columns]
-    
+    # Keep only numeric rows and drop NaNs
+    train_sample = train_sample[
+        ['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
+         'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek', 'Weekly_Sales']
+    ].dropna()
+
+    # Ensure all values are finite (no infs)
+    train_sample = train_sample[np.isfinite(train_sample).all(axis=1)]
+
+    if train_sample.empty:
+        st.error("Cleaned training sample is empty. Check for NaNs or invalid values in input data.")
+        st.stop()
+
     dataset = WalmartDataset(train_sample)
     dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
     
@@ -151,6 +159,7 @@ if st.button("Train Model (takes ~30 seconds)"):
     model = train_model(model, dataloader, epochs=5)
     st.session_state['model'] = model
     st.success("Model trained and saved in session!")
+
 
 
 if 'model' in st.session_state:
