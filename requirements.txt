@@ -1,4 +1,8 @@
-tensorflow==2.15.0
-torch==2.2.0
+# ✅ core dependencies
 streamlit==1.45.1
-pip>=25.1.1
+torch==2.2.0
+tensorflow==2.15.0
+
+# ✅ optional tools
+rich==14.0.0
+pygments==2.19.1
