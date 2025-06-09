@@ -101,14 +101,21 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
     status_text.empty()
     return model
 
+st.write("✅ Features type:", type(features))
+st.write("✅ Features shape:", np.shape(features))
+st.write("✅ Features dtype:", features.dtype if isinstance(features, np.ndarray) else "Not numpy")
 
 # 5. Predict
 def predict(model, features):
     model.eval()
     device = next(model.parameters()).device
     with torch.no_grad():
-        features = np.ascontiguousarray(features, dtype=np.float32)
-        inputs = torch.tensor(features).to(device)
+        if isinstance(features, np.ndarray):
+            features = np.ascontiguousarray(features, dtype=np.float32)
+        else:
+            features = np.array(features, dtype=np.float32, ndmin=2)
+
+        inputs = torch.from_numpy(features).to(device)
         preds = model(inputs).cpu().numpy()
     return preds
 
@@ -145,7 +152,7 @@ temp, fuel_price, cpi, unemployment = simulate_real_time_features(selected_date,
 
 features = np.array([[
     store_enc, dept_enc, temp, fuel_price, cpi, unemployment,
-    selected_date.isocalendar()[1],  # WeekOfYear
+    selected_date.isocalendar()[1],
     selected_date.month,
     selected_date.weekday()
 ]], dtype=np.float32)
