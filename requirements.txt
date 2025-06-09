@@ -3,6 +3,5 @@ pandas
 numpy
 scikit-learn
 torch
-tensorflow
 requests
 python-dateutil
