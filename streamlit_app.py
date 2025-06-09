@@ -137,13 +137,21 @@ features = [[
 ]]
 
 if st.button("Train Model (takes ~30 seconds)"):
-    train_sample = data.sample(frac=0.05, random_state=42)
+    train_sample = data.sample(frac=0.05, random_state=42).dropna()
+
+    # Filter numeric rows only
+    numeric_columns = ['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
+                       'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek', 'Weekly_Sales']
+    train_sample = train_sample[numeric_columns]
+    
     dataset = WalmartDataset(train_sample)
     dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
+    
     model = DemandModel()
     model = train_model(model, dataloader, epochs=5)
     st.session_state['model'] = model
     st.success("Model trained and saved in session!")
+
 
 if 'model' in st.session_state:
     model = st.session_state['model']
