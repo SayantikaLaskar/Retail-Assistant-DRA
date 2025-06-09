@@ -87,6 +87,7 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
+        # Show loss only once per epoch, not for every batch
         st.write(f"Epoch {epoch+1}/{epochs}, Loss: {total_loss/len(dataloader):.4f}")
     return model
 
