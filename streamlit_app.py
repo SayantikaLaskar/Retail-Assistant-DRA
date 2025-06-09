@@ -107,7 +107,8 @@ def predict(model, features):
     model.eval()
     device = next(model.parameters()).device
     with torch.no_grad():
-        inputs = torch.from_numpy(features).float().to(device)
+        features = np.ascontiguousarray(features, dtype=np.float32)
+        inputs = torch.tensor(features).to(device)
         preds = model(inputs).cpu().numpy()
     return preds
 
