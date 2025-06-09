@@ -9,3 +9,4 @@ torch==2.0.1
 streamlit==1.45.1
 pandas==2.3.0
 numpy==1.25.0
+pip>=25.1.1
