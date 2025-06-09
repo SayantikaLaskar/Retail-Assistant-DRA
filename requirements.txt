@@ -1,11 +1,11 @@
-streamlit==1.45.1
-pandas==2.3.0
-numpy==1.25.0
 scikit-learn==1.7.0
-torch==2.0.1
 tensorflow==2.13.0
 rich==14.0.0
 markdown-it-py==3.0.0
 mdurl==0.1.2
 pygments==2.19.1
 python-3.10.12
+torch==2.0.1
+streamlit==1.45.1
+pandas==2.3.0
+numpy==1.25.0
