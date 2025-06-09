@@ -96,7 +96,8 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        inputs = torch.tensor(np.array(features, dtype=np.float32))
+        features = np.array(features, dtype=np.float32)  # Ensure proper NumPy array
+        inputs = torch.from_numpy(features)              # Use from_numpy instead
         preds = model(inputs).numpy()
     return preds
 
