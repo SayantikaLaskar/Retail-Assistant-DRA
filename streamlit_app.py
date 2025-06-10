@@ -103,8 +103,10 @@ def predict(model, features):
         if inputs.ndim == 1:
             inputs = inputs.unsqueeze(0)
 
+        # ✅ Make sure tensor is on CPU before converting to numpy
         preds = model(inputs).detach().cpu().numpy()
     return preds
+
 
 # 6. Simulated real-time features
 
