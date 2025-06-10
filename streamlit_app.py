@@ -174,7 +174,7 @@ if 'model' in st.session_state:
 
         if pred > 14000:
             restock_priority = "High 🔥"
-        elif pred > 5000:
+        elif pred > 13000:
             restock_priority = "Medium ⚠️"
         else:
             restock_priority = "Low ✅"
