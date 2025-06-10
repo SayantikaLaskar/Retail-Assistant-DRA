@@ -103,7 +103,7 @@ def predict(model, features):
         if inputs.ndim == 1:
             inputs = inputs.unsqueeze(0)
 
-        preds = model(inputs).detach().numpy()
+        preds = model(inputs).detach().cpu().numpy()
     return preds
 
 # 6. Simulated real-time features
