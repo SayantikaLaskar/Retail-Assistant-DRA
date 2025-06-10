@@ -172,7 +172,7 @@ if 'model' in st.session_state:
         pred = predict(model, features)
         st.metric(label=f"Predicted Weekly Sales for Store {selected_store} Dept {selected_dept}", value=f"{pred:,.2f}")
 
-        if pred > 20000:
+        if pred > 10000:
             restock_priority = "High 🔥"
         elif pred > 5000:
             restock_priority = "Medium ⚠️"
