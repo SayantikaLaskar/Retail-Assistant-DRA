@@ -98,7 +98,7 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        features_array = np.array(features, dtype=np.float32)
+        features_array = np.array(features, dtype=object).astype(np.float32)
 
         if not np.all(np.isfinite(features_array)):
             raise ValueError("Input features contain NaNs or infinite values.")
@@ -139,10 +139,11 @@ dept_enc = le_dept.transform([selected_dept])[0]
 temp, fuel_price, cpi, unemployment = simulate_real_time_features(selected_date, store_enc)
 
 features = [[
-    store_enc, dept_enc, temp, fuel_price, cpi, unemployment,
-    selected_date.isocalendar()[1],
-    selected_date.month,
-    selected_date.weekday()
+    int(store_enc), int(dept_enc), float(temp), float(fuel_price),
+    float(cpi), float(unemployment),
+    int(selected_date.isocalendar()[1]),
+    int(selected_date.month),
+    int(selected_date.weekday())
 ]]
 
 st.write("Features used for prediction:", features)
