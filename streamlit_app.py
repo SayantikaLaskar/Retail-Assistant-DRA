@@ -56,8 +56,8 @@ class WalmartDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, idx):
-        x = torch.tensor(self.features[idx], dtype=torch.float32)
-        y = torch.tensor(self.targets[idx], dtype=torch.float32)
+        x = self.features[idx]
+        y = self.targets[idx]
         return x, y
 
 # 3. Model
@@ -83,9 +83,8 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
         model.train()
         epoch_loss = 0
         for x, y in dataloader:
-            # Remove these lines:
-            # x = torch.tensor(x, dtype=torch.float32)
-            # y = torch.tensor(y, dtype=torch.float32)
+            x = torch.tensor(x, dtype=torch.float32)
+            y = torch.tensor(y, dtype=torch.float32)
             optimizer.zero_grad()
             preds = model(x)
             loss = criterion(preds, y)
@@ -99,19 +98,16 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        # Convert features safely
         features_array = np.array(features, dtype=np.float32)
 
-        # Ensure features are finite numbers
         if not np.all(np.isfinite(features_array)):
             raise ValueError("Input features contain NaNs or infinite values.")
 
-        # Convert to tensor and ensure 2D shape
         inputs = torch.tensor(features_array, dtype=torch.float32)
         if inputs.ndim == 1:
-            inputs = inputs.unsqueeze(0)  # Convert to [1, feature_dim]
+            inputs = inputs.unsqueeze(0)
 
-        preds = model(inputs).numpy()
+        preds = model(inputs).detach().numpy()
     return preds
 
 # 6. Simulated real-time features
@@ -148,6 +144,8 @@ features = [[
     selected_date.month,
     selected_date.weekday()
 ]]
+
+st.write("Features used for prediction:", features)
 
 if st.button("Train Model (takes ~30 seconds)"):
     train_sample = data.sample(frac=0.05, random_state=42)
