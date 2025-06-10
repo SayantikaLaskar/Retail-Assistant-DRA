@@ -83,8 +83,9 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
         model.train()
         epoch_loss = 0
         for x, y in dataloader:
-            x = torch.tensor(x, dtype=torch.float32)
-            y = torch.tensor(y, dtype=torch.float32)
+            # Remove these lines:
+            # x = torch.tensor(x, dtype=torch.float32)
+            # y = torch.tensor(y, dtype=torch.float32)
             optimizer.zero_grad()
             preds = model(x)
             loss = criterion(preds, y)
