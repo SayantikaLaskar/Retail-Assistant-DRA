@@ -99,7 +99,9 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        inputs = torch.tensor(np.array(features, dtype=np.float32))
+        inputs = torch.tensor(np.array(features, dtype=np.float32)).float()
+        if inputs.ndim == 1:
+            inputs = inputs.unsqueeze(0)  # Ensure batch dimension
         preds = model(inputs).numpy()
     return preds
 
