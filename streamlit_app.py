@@ -93,11 +93,9 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 # 5. Prediction
 
 def predict(model, features):
-    import numpy as np  # ✅ Ensure numpy is explicitly imported here
     model.eval()
     with torch.no_grad():
         features_array = np.array(features, dtype=np.float32)
-
         if not np.all(np.isfinite(features_array)):
             raise ValueError("Input features contain NaNs or infinite values.")
 
@@ -105,10 +103,8 @@ def predict(model, features):
         if inputs.ndim == 1:
             inputs = inputs.unsqueeze(0)
 
-        # ✅ Convert tensor safely to numpy
-        preds = model(inputs).detach().cpu().numpy()
-
-    return preds
+        output = model(inputs)
+        return output.squeeze().item()
 
 
 # 6. Simulated real-time features
@@ -173,7 +169,7 @@ if st.button("Train Model (takes ~30 seconds)"):
 if 'model' in st.session_state:
     model = st.session_state['model']
     try:
-        pred = predict(model, features)[0][0]
+        pred = predict(model, features)
         st.metric(label=f"Predicted Weekly Sales for Store {selected_store} Dept {selected_dept}", value=f"{pred:,.2f}")
 
         if pred > 20000:
