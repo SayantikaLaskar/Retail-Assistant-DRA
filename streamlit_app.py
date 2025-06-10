@@ -55,10 +55,10 @@ class WalmartDataset(Dataset):
     def __len__(self):
         return len(self.df)
 
-    def __getitem__(self, idx):
-        x = self.features[idx]
-        y = self.targets[idx]
-        return x, y
+   def __getitem__(self, idx):
+    x = torch.tensor(self.features[idx], dtype=torch.float32)
+    y = torch.tensor(self.targets[idx], dtype=torch.float32)
+    return x, y
 
 # 3. Model
 class DemandModel(nn.Module):
