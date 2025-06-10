@@ -99,9 +99,18 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        inputs = torch.tensor(np.array(features, dtype=np.float32)).float()
+        # Convert features safely
+        features_array = np.array(features, dtype=np.float32)
+
+        # Ensure features are finite numbers
+        if not np.all(np.isfinite(features_array)):
+            raise ValueError("Input features contain NaNs or infinite values.")
+
+        # Convert to tensor and ensure 2D shape
+        inputs = torch.tensor(features_array, dtype=torch.float32)
         if inputs.ndim == 1:
-            inputs = inputs.unsqueeze(0)  # Ensure batch dimension
+            inputs = inputs.unsqueeze(0)  # Convert to [1, feature_dim]
+
         preds = model(inputs).numpy()
     return preds
 
