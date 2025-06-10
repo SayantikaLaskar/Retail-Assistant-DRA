@@ -47,18 +47,15 @@ def load_data():
 # 2. Dataset class
 class WalmartDataset(Dataset):
     def __init__(self, df):
-        self.df = df
-        self.features = df[['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
-                            'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek']].values.astype(np.float32)
-        self.targets = df['Weekly_Sales'].values.astype(np.float32).reshape(-1, 1)
+        self.features = torch.tensor(df[['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
+                                         'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek']].values, dtype=torch.float32)
+        self.targets = torch.tensor(df['Weekly_Sales'].values.reshape(-1, 1), dtype=torch.float32)
 
     def __len__(self):
-        return len(self.df)
+        return len(self.features)
 
     def __getitem__(self, idx):
-        x = self.features[idx]
-        y = self.targets[idx]
-        return x, y
+        return self.features[idx], self.targets[idx]
 
 # 3. Model
 class DemandModel(nn.Module):
@@ -76,6 +73,7 @@ class DemandModel(nn.Module):
         return self.net(x)
 
 # 4. Training
+
 def train_model(model, dataloader, epochs=5, lr=0.001):
     criterion = nn.MSELoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -83,8 +81,6 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
         model.train()
         epoch_loss = 0
         for x, y in dataloader:
-            x = torch.tensor(x, dtype=torch.float32)
-            y = torch.tensor(y, dtype=torch.float32)
             optimizer.zero_grad()
             preds = model(x)
             loss = criterion(preds, y)
@@ -95,11 +91,11 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
     return model
 
 # 5. Prediction
+
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        features_array = np.array(features, dtype=object).astype(np.float32)
-
+        features_array = np.array(features, dtype=np.float32)
         if not np.all(np.isfinite(features_array)):
             raise ValueError("Input features contain NaNs or infinite values.")
 
@@ -122,8 +118,10 @@ def simulate_real_time_features(date, store_enc):
     return temp, fuel_price, cpi, unemployment
 
 # --- Streamlit UI ---
+
 st.title("🧠 AI-Driven Dynamic Restocking Assistant (DRA)")
 
+# Load data and encoders
 data, le_store, le_dept = load_data()
 
 stores = le_store.classes_
@@ -169,16 +167,19 @@ if st.button("Train Model (takes ~30 seconds)"):
 
 if 'model' in st.session_state:
     model = st.session_state['model']
-    pred = predict(model, features)[0][0]
-    st.metric(label=f"Predicted Weekly Sales for Store {selected_store} Dept {selected_dept}", value=f"{pred:,.2f}")
+    try:
+        pred = predict(model, features)[0][0]
+        st.metric(label=f"Predicted Weekly Sales for Store {selected_store} Dept {selected_dept}", value=f"{pred:,.2f}")
 
-    if pred > 20000:
-        restock_priority = "High 🔥"
-    elif pred > 5000:
-        restock_priority = "Medium ⚠️"
-    else:
-        restock_priority = "Low ✅"
-    st.write(f"Suggested Restocking Priority: **{restock_priority}**")
+        if pred > 20000:
+            restock_priority = "High 🔥"
+        elif pred > 5000:
+            restock_priority = "Medium ⚠️"
+        else:
+            restock_priority = "Low ✅"
+        st.write(f"Suggested Restocking Priority: **{restock_priority}**")
+    except Exception as e:
+        st.error(f"Prediction failed: {e}")
 else:
     st.info("Train the model first by clicking the button above.")
 
