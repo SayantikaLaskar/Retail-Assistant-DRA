@@ -83,6 +83,8 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
         model.train()
         epoch_loss = 0
         for x, y in dataloader:
+            x = torch.tensor(x, dtype=torch.float32)
+            y = torch.tensor(y, dtype=torch.float32)
             optimizer.zero_grad()
             preds = model(x)
             loss = criterion(preds, y)
@@ -96,8 +98,7 @@ def train_model(model, dataloader, epochs=5, lr=0.001):
 def predict(model, features):
     model.eval()
     with torch.no_grad():
-        features = np.array(features, dtype=np.float32)  # Ensure proper NumPy array
-        inputs = torch.from_numpy(features)              # Use from_numpy instead
+        inputs = torch.tensor(np.array(features, dtype=np.float32))
         preds = model(inputs).numpy()
     return preds
 
@@ -138,14 +139,10 @@ features = [[
 
 if st.button("Train Model (takes ~30 seconds)"):
     train_sample = data.sample(frac=0.05, random_state=42)
-
-    # Keep only numeric rows and drop NaNs
-    train_sample = train_sample[
-        ['Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
-         'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek', 'Weekly_Sales']
-    ].dropna()
-
-    # Ensure all values are finite (no infs)
+    train_sample = train_sample[[
+        'Store_enc', 'Dept_enc', 'Temperature', 'Fuel_Price', 
+        'CPI', 'Unemployment', 'WeekOfYear', 'Month', 'DayOfWeek', 'Weekly_Sales']]
+    train_sample = train_sample.dropna()
     train_sample = train_sample[np.isfinite(train_sample).all(axis=1)]
 
     if train_sample.empty:
@@ -154,13 +151,10 @@ if st.button("Train Model (takes ~30 seconds)"):
 
     dataset = WalmartDataset(train_sample)
     dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
-    
     model = DemandModel()
     model = train_model(model, dataloader, epochs=5)
     st.session_state['model'] = model
     st.success("Model trained and saved in session!")
-
-
 
 if 'model' in st.session_state:
     model = st.session_state['model']
